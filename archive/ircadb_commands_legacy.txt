@@ -1,0 +1,21 @@
+完整训练已在后台运行，现在无需重复启动。先查看进度：
+systemctl --user status ircadb-v3-full-v1.service
+tail -f /home/yangx/code/new_deform/ai_worker/ROVENet/output/geotransformer.ircadb_v3.full_v1/train_console.log
+训练完成后，脚本会自动测试全部 1,860 对测试样本。查看结果：
+cat /home/yangx/code/new_deform/ai_worker/ROVENet/output/geotransformer.ircadb_v3.full_v1/test_summary.json
+如需在当前任务结束后手动续训或重新执行完整流程：
+cd /home/yangx/code/new_deform/ai_worker/ROVENet
+CUDA_VISIBLE_DEVICES=0 IRCADB_V3_RUN_NAME=full_v1 \
+bash experiments/geotransformer.ircadb_v3/run_full.sh
+这个脚本固定使用 geo_v2，检测到已有检查点时会自动续训，训练结束后自动测试。
+
+
+这是 RTORv2 项目使用 geo_v2 环境的单独测试指令。待 best.pth.tar 生成后执行：
+cd /home/yangx/code/new_deform/ai_worker/ROVENet
+
+CUDA_VISIBLE_DEVICES=0 IRCADB_V3_RUN_NAME=full_v1 \
+OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 \
+/home/yangx/miniconda3/envs/geo_v2/bin/python \
+experiments/geotransformer.ircadb_v3/test.py \
+--snapshot output/geotransformer.ircadb_v3.full_v1/snapshots/best.pth.tar \
+--output output/geotransformer.ircadb_v3.full_v1/test_summary.json
